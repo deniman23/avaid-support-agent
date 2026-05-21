@@ -113,8 +113,9 @@ def upload_batch(account: Account, dataset: Dataset, paths: list[Path]) -> None:
 
 def main() -> int:
     # Собираем md-файлы из обеих папок (dify-kb — сценарии, rules — справочники)
-    paths_kb = sorted(KB_INDEX.glob("*.md")) if KB_INDEX.is_dir() else []
-    paths_rules = sorted(KB_RULES.glob("*.md")) if KB_RULES.is_dir() else []
+    # Файлы с _ в начале имени исключаются (архивные/служебные, например _законы_агента.md)
+    paths_kb = sorted(p for p in KB_INDEX.glob("*.md") if not p.name.startswith("_")) if KB_INDEX.is_dir() else []
+    paths_rules = sorted(p for p in KB_RULES.glob("*.md") if not p.name.startswith("_")) if KB_RULES.is_dir() else []
 
     # Объединяем, исключая дубликаты по имени файла (dify-kb имеет приоритет)
     seen_names: set[str] = {p.name for p in paths_kb}
