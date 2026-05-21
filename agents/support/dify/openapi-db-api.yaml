@@ -1,0 +1,228 @@
+openapi: 3.0.3
+info:
+  title: Avaid Support DB API
+  version: 1.1.0
+  description: Support DB API. Auth X-Support-Api-Key + user_email (query) or X-Dify-User-Email.
+servers:
+  - url: http://support-db-api:8090
+components:
+  parameters:
+    UserEmail:
+      name: user_email
+      in: query
+      required: false
+      description: Email из поля чата (подставляется автоматически; LLM может не передавать)
+      schema:
+        type: string
+paths:
+  /support/users/lookup:
+    get:
+      operationId: supportUsersLookup
+      summary: Lookup session user by email
+      parameters:
+        - $ref: "#/components/parameters/UserEmail"
+        - name: email
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Должен совпадать с user_email сессии
+      responses:
+        "200":
+          description: OK
+  /support/shops:
+    get:
+      operationId: supportShops
+      summary: List user shops
+      parameters:
+        - $ref: "#/components/parameters/UserEmail"
+      responses:
+        "200":
+          description: OK
+  /support/stock/check:
+    get:
+      operationId: supportStockCheck
+      summary: Stock check for shop
+      parameters:
+        - $ref: "#/components/parameters/UserEmail"
+        - name: shop_id
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: OK
+  /support/stock/issues:
+    get:
+      operationId: supportStockIssues
+      summary: Stock sync issues
+      parameters:
+        - $ref: "#/components/parameters/UserEmail"
+        - name: shop_id
+          in: query
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: OK
+  /support/prices/check:
+    get:
+      operationId: supportPricesCheck
+      summary: Price sync check
+      parameters:
+        - $ref: "#/components/parameters/UserEmail"
+        - name: shop_id
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: OK
+  /support/products/unlinked:
+    get:
+      operationId: supportProductsUnlinked
+      summary: Unlinked marketplace products
+      parameters:
+        - $ref: "#/components/parameters/UserEmail"
+        - name: shop_id
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: OK
+  /support/orders/recent:
+    get:
+      operationId: supportOrdersRecent
+      summary: Recent orders
+      parameters:
+        - $ref: "#/components/parameters/UserEmail"
+        - name: shop_id
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: OK
+  /support/returns/recent:
+    get:
+      operationId: supportReturnsRecent
+      summary: Recent returns
+      parameters:
+        - $ref: "#/components/parameters/UserEmail"
+        - name: shop_id
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: OK
+  /support/sync/last-error:
+    get:
+      operationId: supportSyncLastError
+      summary: Last sync error for user
+      parameters:
+        - $ref: "#/components/parameters/UserEmail"
+      responses:
+        "200":
+          description: OK
+  /support/tariffs/catalog:
+    get:
+      operationId: supportTariffsCatalog
+      summary: Active tariff plans from DB (no user email)
+      description: Каталог тарифов Avaid из таблицы tariff_plans. Вызывать при вопросах о видах тарифов, ценах, лимитах.
+      responses:
+        "200":
+          description: OK
+  /support/billing/status:
+    get:
+      operationId: supportBillingStatus
+      summary: Billing status (read-only)
+      parameters:
+        - $ref: "#/components/parameters/UserEmail"
+      responses:
+        "200":
+          description: OK
+  /support/shops/{shop_id}/settings:
+    patch:
+      operationId: supportShopSettingsUpdate
+      summary: Update shop sync toggles (sync_stock, sync_price, is_active)
+      parameters:
+        - $ref: "#/components/parameters/UserEmail"
+        - name: shop_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                sync_stock:
+                  type: boolean
+                sync_price:
+                  type: boolean
+                is_active:
+                  type: boolean
+                processes_new_orders:
+                  type: boolean
+      responses:
+        "200":
+          description: OK
+  /support/products/{product_id}/sync:
+    patch:
+      operationId: supportProductSyncUpdate
+      summary: Update product sync_stocks / sync_prices flags
+      parameters:
+        - $ref: "#/components/parameters/UserEmail"
+        - name: product_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                sync_stocks:
+                  type: boolean
+                sync_prices:
+                  type: boolean
+      responses:
+        "200":
+          description: OK
+  /support/products/{product_id}/link:
+    patch:
+      operationId: supportProductLinkMs
+      summary: Link marketplace product to ms_products row
+      parameters:
+        - $ref: "#/components/parameters/UserEmail"
+        - name: product_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [ms_product_id]
+              properties:
+                ms_product_id:
+                  type: integer
+      responses:
+        "200":
+          description: OK

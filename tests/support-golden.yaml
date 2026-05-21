@@ -1,0 +1,97 @@
+# Эталонные вопросы поддержки Avaid (регрессия после изменений KB/модели)
+# Запуск: ./scripts/run-golden-tests.sh
+
+defaults:
+  user: golden-test
+  timeout_sec: 180
+
+cases:
+  - id: ozon-linking
+    question: "Подскажите, как у вас происходит связка товаров на Ozon?"
+    must_contain:
+      - "Цены и остатки"
+      - "МойСклад"
+      - "привяз"
+    must_not_contain:
+      - "обратитесь в поддержку"
+      - "создаёт карточки"
+      - "создает карточки"
+      - "создаст карточки"
+      - "информация предоставлена"
+      - "redacted_thinking"
+
+  - id: ozon-linking-synonym
+    question: "Как привязать товары Ozon к МойСклад?"
+    must_contain:
+      - "Привяз"
+    must_not_contain:
+      - "обратитесь в поддержку"
+      - "создаёт карточки"
+
+  - id: wb-trade-types
+    question: "Какие типы торговли на Wildberries?"
+    must_contain:
+      - "FBO"
+      - "FBS"
+    must_not_contain:
+      - "Ситилинк"
+      - "Леруа"
+
+  - id: marketplaces-list
+    question: "Какие маркетплейсы можно подключить в Avaid?"
+    must_contain:
+      - "Ozon"
+      - "Wildberries"
+      - "Яндекс"
+      - "Авито"
+      - "не поддерж"
+
+  - id: no-email-faq
+    question: "Как работает автопривязка?"
+    must_contain:
+      - "Автопривяз"
+      - "МойСклад"
+    must_not_contain:
+      - "укажите email"
+      - "проверьте email"
+      - "yets@"
+      - "EAN"
+      - "ISBN"
+
+  - id: ozon-trade-types
+    question: "Какие типы торговли на Ozon?"
+    must_contain:
+      - "FBO"
+      - "FBS"
+    must_not_contain:
+      - "FBY"
+      - "DBS"
+      - "DBW"
+
+  - id: yandex-trade-types
+    question: "Какие схемы продаж на Яндекс.Маркете?"
+    must_contain:
+      - "FBY"
+      - "FBS"
+    must_not_contain:
+      - "Amazon"
+      - "Ситилинк"
+
+  - id: ozon-fbo-fbs-diff
+    question: "Чем отличается FBO и FBS на Ozon?"
+    must_contain:
+      - "FBO"
+      - "FBS"
+      - "отдельн"
+    must_not_contain:
+      - "сменить"
+      - "можно изменить тип"
+
+  - id: avito-linking
+    question: "Как привязать товары Avito к МойСклад?"
+    must_contain:
+      - "Avito"
+      - "МойСклад"
+    must_not_contain:
+      - "создаёт объявления"
+      - "создает объявления"

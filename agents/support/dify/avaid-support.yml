@@ -1,0 +1,77 @@
+# Dify app export template — import via Studio or API
+# Model: Ollama qwen2.5:14b (рекомендуется; 7b — только если мало RAM)
+# Mode: Agent Chat
+
+app:
+  name: Avaid Support
+  mode: agent-chat
+  description: Техподдержка Avaid — настройка, остатки, цены, заказы, МойСклад, тарифы (справочно)
+
+model:
+  provider: ollama
+  name: qwen2.5:14b
+  parameters:
+    temperature: 0.3
+    top_p: 0.9
+
+features:
+  file_upload: false
+  opening_statement: |
+    Здравствуйте! Я помогу с приложением Avaid.
+    Выберите тему или опишите проблему: остатки, цены, заказы, настройка магазина, ошибка синхронизации, тариф.
+  suggested_questions:
+    - Не обновляются остатки
+    - Проблема с ценами или акциями
+    - Заказ не подтверждается
+    - Как подключить магазин
+    - Ошибка / не работает синхронизация
+    - Вопрос по тарифу
+
+agent:
+  strategy: function_call
+  max_iteration: 5
+  system_prompt_file: ../prompts/system.md
+
+knowledge:
+  datasets:
+    - name: Avaid Rules
+      source: shared/knowledge/rules/
+    - name: Avaid Codebase
+      source: shared/knowledge/codebase/
+    - name: Avaid DB Schema
+      source: shared/docs/db-schema-for-agent.md
+  retrieval:
+    top_k: 4
+    score_threshold: 0.5
+
+tools:
+  - type: openapi
+    spec: openapi-db-api.yaml
+    auth:
+      type: api_key
+      header: X-Support-Api-Key
+      value: ${SUPPORT_API_KEY}
+    custom_headers:
+      X-Dify-User-Email: "{{user_email}}"
+
+variables:
+  - name: user_email
+    type: string
+    required: true
+
+security:
+  sensitive_words:
+    - password
+    - api_key
+    - token
+    - secret
+    - BEGIN PRIVATE
+    - SELECT *
+    - DROP TABLE
+    - ignore instructions
+
+memory:
+  window: 20
+  conversation_variables:
+    - shop_id
+    - scenario_type

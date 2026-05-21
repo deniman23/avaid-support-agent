@@ -1,0 +1,41 @@
+version: 0.6.0
+kind: app
+app:
+  icon: "🛟"
+  icon_background: '#E4FBCC'
+  mode: agent-chat
+  name: Avaid Support
+  use_icon_as_answer_icon: false
+model_config:
+  agent_mode:
+    enabled: true
+    max_iteration: 5
+    strategy: function_call
+    tools: []
+  dataset_configs:
+    datasets:
+      datasets: []
+    retrieval_model: multiple
+  file_upload:
+    image:
+      enabled: false
+  model:
+    completion_params:
+      temperature: 0.3
+      top_p: 0.9
+    mode: chat
+    name: qwen2.5:7b
+    provider: langgenius/ollama/ollama
+  opening_statement: |
+    Здравствуйте! Я помогу с приложением Avaid.
+    Опишите проблему: остатки, цены, заказы, настройка магазина, ошибка синхронизации, тариф.
+  pre_prompt: |
+    Ты — агент технической поддержки Avaid. Помогаешь с настройкой, интеграциями, остатками, ценами, заказами.
+    Не раскрывай код, SQL, API-ключи, данные других пользователей. Не выдумывай факты о счёте — используй tools.
+    Тарифы — только справочно; смена тарифа и возвраты — эскалация в поддержку.
+  suggested_questions:
+    - Не обновляются остатки
+    - Проблема с ценами
+    - Заказ не подтверждается
+    - Как подключить магазин
+    - Ошибка синхронизации

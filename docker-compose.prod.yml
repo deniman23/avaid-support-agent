@@ -1,0 +1,28 @@
+# Prod / staging: только db-api → внешняя PostgreSQL (DATABASE_URL в .env).
+# Mock Postgres не поднимается.
+services:
+  support-db-api:
+    build: ./shared/db-api
+    container_name: support-db-api
+    env_file: .env
+    environment:
+      DATABASE_URL: ${DATABASE_URL:?Set DATABASE_URL in .env}
+      DB_API_MODE: ${DB_API_MODE:-readwrite}
+      SUPPORT_API_KEY: ${SUPPORT_API_KEY:-change-me-local-dev-key}
+    ports:
+      - "8090:8090"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - support_audit:/var/log/support-db-api
+    networks:
+      - default
+      - dify
+
+networks:
+  dify:
+    external: true
+    name: ${DIFY_DOCKER_NETWORK:-docker_default}
+
+volumes:
+  support_audit:

@@ -1,0 +1,10 @@
+.env
+shared/codebase/avaid_main-dev/
+shared/knowledge/codebase-raw/
+shared/knowledge/codebase-billing/
+__pycache__/
+*.pyc
+.venv/
+*.log
+.DS_Store
+shared/knowledge/.dify-index/
