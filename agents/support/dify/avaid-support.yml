@@ -34,15 +34,19 @@ agent:
 
 knowledge:
   datasets:
+    # Основной датасет — сценарии dify-kb + правила rules/
     - name: Avaid Rules
-      source: shared/knowledge/rules/
-    - name: Avaid Codebase
-      source: shared/knowledge/codebase/
-    - name: Avaid DB Schema
-      source: shared/docs/db-schema-for-agent.md
+      source: shared/knowledge/dify-kb/
+    # Закомментированы — подключать только если нужен режим codebase/full
+    # - name: Avaid Codebase
+    #   source: shared/knowledge/codebase/
+    # - name: Avaid DB Schema
+    #   source: shared/docs/db-schema-for-agent.md
   retrieval:
-    top_k: 4
-    score_threshold: 0.5
+    top_k: 8
+    # score_threshold убран намеренно: 0.5 отсекает валидные chunks на qwen+nomic-embed-text
+    # Дополнительная фильтрация идёт через промпт (system.md)
+    score_threshold_enabled: false
 
 tools:
   - type: openapi

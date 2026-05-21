@@ -1,5 +1,15 @@
 #!/usr/bin/env python3
-"""Оптимизация Avaid Rules: high_quality + hybrid + chunk 800 + переиндекс."""
+"""
+Оптимизация Avaid Rules: high_quality + hybrid + chunk 800 + переиндекс.
+
+Грузит документы из двух папок:
+  /tmp/support-agent-kb/dify-kb/   — сценарии (10 md, основной источник)
+  /tmp/support-agent-kb/rules/     — правила/справочники (если есть)
+
+Запуск:
+  docker cp scripts/dify-optimize-kb-docker.py docker-api-1:/tmp/dify-optimize-kb-docker.py
+  docker exec docker-api-1 python -u /tmp/dify-optimize-kb-docker.py
+"""
 from __future__ import annotations
 
 import os
@@ -32,7 +42,10 @@ from sqlalchemy import select
 TENANT_ID = "11aad9d2-e6a0-41fc-b8a1-5bf10ab4518f"
 ACCOUNT_ID = "8416d7fe-259c-48ca-9a5c-be84f1a7e547"
 DATASET_NAME = "Avaid Rules"
+# Основная папка со сценарными KB-файлами
 KB_INDEX = Path("/tmp/support-agent-kb/dify-kb")
+# Дополнительная папка с правилами/справочниками (опционально)
+KB_RULES = Path("/tmp/support-agent-kb/rules")
 PROVIDER = "langgenius/ollama/ollama"
 EMBED_MODEL = os.environ.get("SUPPORT_EMBED_MODEL", "nomic-embed-text")
 CHUNK_SIZE = int(os.environ.get("SUPPORT_CHUNK_SIZE", "800"))
@@ -99,10 +112,25 @@ def upload_batch(account: Account, dataset: Dataset, paths: list[Path]) -> None:
 
 
 def main() -> int:
-    paths = sorted(KB_INDEX.glob("*.md")) if KB_INDEX.is_dir() else []
+    # Собираем md-файлы из обеих папок (dify-kb — сценарии, rules — справочники)
+    paths_kb = sorted(KB_INDEX.glob("*.md")) if KB_INDEX.is_dir() else []
+    paths_rules = sorted(KB_RULES.glob("*.md")) if KB_RULES.is_dir() else []
+
+    # Объединяем, исключая дубликаты по имени файла (dify-kb имеет приоритет)
+    seen_names: set[str] = {p.name for p in paths_kb}
+    paths_extra = [p for p in paths_rules if p.name not in seen_names]
+    paths = paths_kb + paths_extra
+
     if not paths:
-        print(f"No md in {KB_INDEX}", file=sys.stderr)
+        print(f"No md in {KB_INDEX} (and {KB_RULES})", file=sys.stderr)
+        print("Убедитесь что файлы скопированы командой:")
+        print("  docker cp shared/knowledge/dify-kb/. docker-api-1:/tmp/support-agent-kb/dify-kb/")
+        print("  docker cp shared/knowledge/rules/. docker-api-1:/tmp/support-agent-kb/rules/")
         return 1
+
+    print(f"  из dify-kb: {len(paths_kb)} файлов")
+    print(f"  из rules/:  {len(paths_extra)} файлов (уникальных)")
+    print(f"  итого: {len(paths)} файлов")
 
     _, flask_app = create_app()
     with flask_app.app_context():
