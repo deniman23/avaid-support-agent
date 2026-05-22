@@ -36,7 +36,8 @@ sg docker -c "docker exec docker-api-1 python -u /tmp/dify-register-embedding-do
 sg docker -c "docker exec docker-api-1 python -u /tmp/dify-optimize-kb-docker.py"
 
 echo "==> 5. Link app (chat, Rules only, top_k=8, no score threshold)"
-sg docker -c "docker exec -e SUPPORT_RETRIEVAL_TOP_K=8 -e SUPPORT_DATASET_MODE=rules_only -e SUPPORT_LLM_MODEL=qwen2.5:14b docker-api-1 python -u /tmp/dify-relink-kb-to-app-docker.py"
+MISTRAL_MODEL="${SUPPORT_LLM_MODEL:-mistral-large-latest}"
+sg docker -c "docker exec -e SUPPORT_RETRIEVAL_TOP_K=8 -e SUPPORT_DATASET_MODE=rules_only -e SUPPORT_LLM_MODEL=$MISTRAL_MODEL docker-api-1 python -u /tmp/dify-relink-kb-to-app-docker.py"
 
 echo "==> 6. Wait indexing (~90s)"
 sleep 90

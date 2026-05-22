@@ -43,7 +43,7 @@ echo "==> 5b. Reindex Avaid Billing (тарифы из Go)"
 sg docker -c "docker exec -e DIFY_DATASET_NAME='Avaid Billing' -e DIFY_KB_SUBDIR=codebase-billing -e DIFY_KB_EXTENSIONS=txt docker-api-1 python -u /tmp/dify-reindex-kb-docker.py"
 
 echo "==> 6. Link app: chat + Codebase + Billing (без account tools)"
-sg docker -c "docker exec -e DIFY_SETUP_PROMPT_ONLY=1 -e SUPPORT_DATASET_MODE=codebase_only -e SUPPORT_ENABLE_ACCOUNT_TOOLS=0 -e SUPPORT_LLM_MODEL=qwen2.5:14b docker-api-1 python -u /tmp/dify-complete-setup-docker.py"
+sg docker -c "docker exec -e DIFY_SETUP_PROMPT_ONLY=1 -e SUPPORT_DATASET_MODE=codebase_only -e SUPPORT_ENABLE_ACCOUNT_TOOLS=0 -e SUPPORT_LLM_MODEL=${SUPPORT_LLM_MODEL:-mistral-large-latest} docker-api-1 python -u /tmp/dify-complete-setup-docker.py"
 
 sg docker -c "docker cp '$ROOT/scripts/dify-ensure-app-token-docker.py' docker-api-1:/tmp/dify-ensure-app-token-docker.py"
 sg docker -c "docker exec docker-api-1 python -u /tmp/dify-ensure-app-token-docker.py" >/dev/null 2>&1 || true

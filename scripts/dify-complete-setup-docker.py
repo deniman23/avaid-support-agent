@@ -72,8 +72,8 @@ OPENAPI_PATH = Path("/tmp/openapi-db-api.yaml")
 SYSTEM_PROMPT_PATH = Path("/tmp/system.md")
 SUPPORT_API_KEY = "change-me-local-dev-key"
 DB_API_URL = "http://support-db-api:8090"
-# qwen2.5:14b — без «thinking»-блоков в ответе; qwen3:8b оставлен как опция через env
-SUPPORT_LLM_MODEL = os.environ.get("SUPPORT_LLM_MODEL", "qwen2.5:14b")
+# Mistral AI API — работает с РФ-серверов без VPN
+SUPPORT_LLM_MODEL = os.environ.get("SUPPORT_LLM_MODEL", "mistral-large-latest")
 # 1 = все tools (нужен email); 0 = только public tools (тарифы) + agent
 SUPPORT_ENABLE_ACCOUNT_TOOLS = os.environ.get("SUPPORT_ENABLE_ACCOUNT_TOOLS", "0") == "1"
 
@@ -281,14 +281,13 @@ def link_app(account: Account, dataset_ids: list[str], api_agent_tools: list[dic
         "Для проверки данных вашего аккаунта укажите email в поле выше."
     )
     config["model"] = {
-        "provider": "langgenius/ollama/ollama",
+        "provider": "mistralai",
         "name": SUPPORT_LLM_MODEL,
         "mode": "chat",
         "completion_params": {
             "temperature": 0.1,
-            "top_p": 0.8,
-            "num_predict": 900,
-            "num_ctx": 8192,
+            "top_p": 0.9,
+            "max_tokens": 1024,
         },
     }
     config["dataset_configs"] = {

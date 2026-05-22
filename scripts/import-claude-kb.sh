@@ -40,7 +40,7 @@ echo "==> Reindex Avaid Rules (replace all)"
 sg docker -c "docker exec -e DIFY_DATASET_NAME='Avaid Rules' -e DIFY_KB_SUBDIR=dify-kb docker-api-1 python -u /tmp/dify-reindex-kb-docker.py"
 
 echo "==> App: chat + только Avaid Rules, top_k=5"
-sg docker -c "docker exec -e DIFY_SETUP_PROMPT_ONLY=1 -e SUPPORT_DATASET_MODE=rules_only -e SUPPORT_ENABLE_ACCOUNT_TOOLS=0 -e SUPPORT_LLM_MODEL=qwen2.5:14b docker-api-1 python -u /tmp/dify-complete-setup-docker.py"
+sg docker -c "docker exec -e DIFY_SETUP_PROMPT_ONLY=1 -e SUPPORT_DATASET_MODE=rules_only -e SUPPORT_ENABLE_ACCOUNT_TOOLS=0 -e SUPPORT_LLM_MODEL=${SUPPORT_LLM_MODEL:-mistral-large-latest} docker-api-1 python -u /tmp/dify-complete-setup-docker.py"
 
 echo ""
 echo "Готово. Studio → Avaid Support → новый чат (F5)."

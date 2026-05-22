@@ -1,5 +1,5 @@
 # Dify app export template — import via Studio or API
-# Model: Ollama qwen2.5:14b (рекомендуется; 7b — только если мало RAM)
+# Model: Mistral AI mistral-large-latest (API, работает с РФ-серверов без VPN)
 # Mode: Agent Chat
 
 app:
@@ -8,11 +8,12 @@ app:
   description: Техподдержка Avaid — настройка, остатки, цены, заказы, МойСклад, тарифы (справочно)
 
 model:
-  provider: ollama
-  name: qwen2.5:14b
+  provider: mistralai
+  name: mistral-large-latest
   parameters:
-    temperature: 0.3
+    temperature: 0.1
     top_p: 0.9
+    max_tokens: 1024
 
 features:
   file_upload: false

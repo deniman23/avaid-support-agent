@@ -13,7 +13,7 @@
 Переменные:
   SUPPORT_DATASET_MODE   rules_only (default) | full
   SUPPORT_RETRIEVAL_TOP_K  8 (default)
-  SUPPORT_LLM_MODEL        qwen2.5:14b (default)
+  SUPPORT_LLM_MODEL        mistral-large-latest (default)
 """
 from __future__ import annotations
 
@@ -39,7 +39,7 @@ APP_NAME = "Avaid Support"
 SYSTEM_PROMPT_PATH = Path("/tmp/system.md")
 
 SUPPORT_DATASET_MODE = os.environ.get("SUPPORT_DATASET_MODE", "rules_only").strip().lower()
-SUPPORT_LLM_MODEL = os.environ.get("SUPPORT_LLM_MODEL", "qwen2.5:14b")
+SUPPORT_LLM_MODEL = os.environ.get("SUPPORT_LLM_MODEL", "mistral-large-latest")
 TOP_K = int(os.environ.get("SUPPORT_RETRIEVAL_TOP_K", "8"))
 
 # Имена датасетов которые ищем в Dify по режиму
@@ -131,15 +131,15 @@ def main() -> int:
         config["pre_prompt"] = load_system_prompt()
 
         # Обновляем модель
+        # Провайдер: Mistral AI (работает с РФ-серверов без VPN)
         config["model"] = {
-            "provider": "langgenius/ollama/ollama",
+            "provider": "mistralai",
             "name": SUPPORT_LLM_MODEL,
             "mode": "chat",
             "completion_params": {
                 "temperature": 0.1,
-                "top_p": 0.8,
-                "num_predict": 900,
-                "num_ctx": 8192,
+                "top_p": 0.9,
+                "max_tokens": 1024,
             },
         }
 
